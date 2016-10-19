@@ -541,6 +541,9 @@ namespace COLLADAMax
 			addParamBlockAnimatedExtraParameters(SHADER_ELEMENT, SHADER_PARAMETERS, SHADER_PARAMETER_COUNT, shaderParameters, effectId);
 			
 			addParamBlockAnimatedExtraParameters(EXTENDED_SHADER_ELEMENT, EXTENDED_SHADER_PARAMETERS, EXTENDED_SHADER_PARAMETER_COUNT, extendedParameters, effectId);
+
+			// added by zjhlogo
+			effectProfile.setDoubleSide(material->GetTwoSided());
         }
 
         // Export child maps

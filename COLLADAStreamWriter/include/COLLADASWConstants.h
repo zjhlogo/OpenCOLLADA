@@ -328,6 +328,7 @@ namespace COLLADASW
 		static const String CSW_ELEMENT_EVENT;
 		static const String CSW_ELEMENT_TIMESTAMPS;
 		static const String CSW_ELEMENT_MARKERS;
+		static const String CSW_ELEMENT_DOUBLE_SIDED;	// added by zjhlogo to export double side materials
 
 
 		static const String CSW_ATTRIBUTE_CLOSED;

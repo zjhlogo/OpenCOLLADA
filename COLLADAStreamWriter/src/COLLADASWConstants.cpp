@@ -319,6 +319,7 @@ namespace COLLADASW
 	const String CSWC::CSW_ELEMENT_EVENT = "event";
 	const String CSWC::CSW_ELEMENT_TIMESTAMPS = "timestamps";
 	const String CSWC::CSW_ELEMENT_MARKERS = "markers";
+	const String CSWC::CSW_ELEMENT_DOUBLE_SIDED = "double_sided";	// added by zjhlogo to export double side materials
 
 	const String CSWC::CSW_ATTRIBUTE_CLOSED = "closed";
     const String CSWC::CSW_ATTRIBUTE_COUNT = "count";

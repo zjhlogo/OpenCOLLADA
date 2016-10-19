@@ -44,6 +44,7 @@ namespace COLLADASW
     , mIndexOfRefractionSid (  )
     , mExtraTechniqueColorOrTextureEntries (  )
     , mIncludeSid ( "" )
+	, mDoubleSide( false )
     {}
 
     //---------------------------------------------------------------
@@ -169,6 +170,14 @@ namespace COLLADASW
             // CSWC::CSW_ELEMENT_TECHNIQUE
             mSW->closeElement ();
         }
+
+		// add double side, added by zjhlogo
+		if (mDoubleSide)
+		{
+			mSW->openElement(CSWC::CSW_ELEMENT_DOUBLE_SIDED);
+			mSW->appendText("true");
+			mSW->closeElement();
+		}
     }
 
     //---------------------------------------------------------------
