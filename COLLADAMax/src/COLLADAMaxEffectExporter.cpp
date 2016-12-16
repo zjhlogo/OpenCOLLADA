@@ -146,7 +146,7 @@ namespace COLLADAMax
 
         if ( material )
         {
-            exportEffect ( exportNode, material );
+			exportEffect ( exportNode, material );
         }
 
         else 
@@ -543,7 +543,90 @@ namespace COLLADAMax
 			addParamBlockAnimatedExtraParameters(EXTENDED_SHADER_ELEMENT, EXTENDED_SHADER_PARAMETERS, EXTENDED_SHADER_PARAMETER_COUNT, extendedParameters, effectId);
 
 			// added by zjhlogo
-			effectProfile.setDoubleSide(material->GetTwoSided());
+
+			TimeValue tickPerFrame = GetTicksPerFrame();
+			float frameTime = 1.0f / GetFrameRate();
+
+			// add double side
+			addExtraParameter(DOUBLE_SIDED_PROPERTY, (material->GetTwoSided() == TRUE));
+
+			// add opacity animation
+			Interval materialIv = material->GetTimeRange(TIMERANGE_ALL | TIMERANGE_CHILDANIMS | TIMERANGE_CHILDNODES);
+			if (!materialIv.Empty() && materialIv.Duration() > 0)
+			{
+				TimeValue start = materialIv.Start();
+				TimeValue end = materialIv.End();
+				TimeValue offset = start;
+
+				std::vector<float> timeValues;
+				std::vector<float> opacityValues;
+				for (TimeValue t = start; t <= end; t += tickPerFrame)
+				{
+					timeValues.push_back(static_cast<float>(t * frameTime / tickPerFrame));
+					opacityValues.push_back(material->GetOpacity(t));
+				}
+
+				addExtraParameter(OPACITY_TIMES, timeValues);
+				addExtraParameter(OPACITY_VALUES, opacityValues);
+			}
+
+			// add uv animation
+			for (int i = 0; i < material->NumSubTexmaps(); ++i)
+			{
+				Texmap* texMap = material->GetSubTexmap(i);
+				if (!texMap) continue;
+				if (texMap->ClassID() != Class_ID(BMTEX_CLASS_ID, 0)) continue;
+
+//				Matrix3 uvTrans;
+//				texMap->GetUVTransform(uvTrans);
+
+				BitmapTex* bitmapTex = (BitmapTex*)texMap;
+				StdUVGen* uvGen = bitmapTex->GetUVGen();
+				if (!uvGen) continue;
+
+				Interval texMapIv = uvGen->GetTimeRange(TIMERANGE_ALL | TIMERANGE_CHILDANIMS | TIMERANGE_CHILDNODES);
+				if (!texMapIv.Empty() && texMapIv.Duration() > 0)
+				{
+					TimeValue start = texMapIv.Start();
+					TimeValue end = texMapIv.End();
+					TimeValue offset = start;
+
+					std::vector<float> timeValues;
+					std::vector<float> uvOffsetValues;
+					std::vector<float> angValues;
+					std::vector<float> scaleValues;
+
+					for (TimeValue t = start; t <= end; t += tickPerFrame)
+					{
+						float u = uvGen->GetUOffs(t);
+						float v = uvGen->GetVOffs(t);
+
+						float uAng = uvGen->GetUAng(t);
+						float vAng = uvGen->GetVAng(t);
+						float wAng = uvGen->GetWAng(t);
+
+						float uScale = uvGen->GetUScl(t);
+						float vScale = uvGen->GetVScl(t);
+
+						timeValues.push_back(static_cast<float>(t * frameTime / tickPerFrame));
+
+						uvOffsetValues.push_back(u);
+						uvOffsetValues.push_back(v);
+
+						angValues.push_back(uAng);
+						angValues.push_back(vAng);
+						angValues.push_back(wAng);
+
+						scaleValues.push_back(uScale);
+						scaleValues.push_back(vScale);
+					}
+
+					addExtraParameter(UV_TIMES, timeValues);
+					addExtraParameter(UV_OFFSET_VALUES, uvOffsetValues);
+					addExtraParameter(UV_ANGLE_VALUES, angValues);
+					addExtraParameter(UV_SCALE_VALUES, scaleValues);
+				}
+			}
         }
 
         // Export child maps

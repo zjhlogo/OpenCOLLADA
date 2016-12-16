@@ -38,7 +38,16 @@ namespace COLLADAMax
 	const String Extra::PRIMARY_VISIBILITY_PROPERTY = "primary_visibility";
 	const String Extra::SECONDARY_VISIBILITY_PROPERTY = "secondary_visibility";
 
-    //---------------------------------------------------------------
+	// added by zjhlogo
+	const String Extra::DOUBLE_SIDED_PROPERTY = "double_sided";
+	const String Extra::OPACITY_TIMES = "opacity_times";
+	const String Extra::OPACITY_VALUES = "opacity_values";
+	const String Extra::UV_TIMES = "uv_times";
+	const String Extra::UV_OFFSET_VALUES = "uv_offset_values";
+	const String Extra::UV_ANGLE_VALUES = "uv_angle_values";
+	const String Extra::UV_SCALE_VALUES = "uv_scale_values";
+
+	//---------------------------------------------------------------
     Extra::Extra ( COLLADASW::StreamWriter * streamWriter, DocumentExporter * documentExporter )
             :mSW(streamWriter),
 			mAnimationExporter(documentExporter->getAnimationExporter()),

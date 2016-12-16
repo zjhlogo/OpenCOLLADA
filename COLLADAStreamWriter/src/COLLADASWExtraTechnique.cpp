@@ -139,6 +139,28 @@ namespace COLLADASW
         profile.mParameters.push_back(Parameter(paramName, paramValue));
     }
 
+	//---------------------------------------------------------------
+	void BaseExtraTechnique::addExtraTechniqueParameter(
+		const String& profileName,
+		const String& paramName,
+		const std::vector<float>& floatArray,
+		const String &paramSid,
+		const String& tagName)
+	{
+		// Get the current Profile from the map or create a new one.
+		Profile& profile = getProfile(profileName);
+
+		// Create the value
+		ParamData paramValue;
+		paramValue.sid = paramSid;
+		paramValue.floatArray = floatArray;
+		paramValue.paramType = FLOAT_ARRAY;
+		paramValue.tagName = tagName;
+
+		// Insert the value into the parameters map of the current profile.
+		profile.mParameters.push_back(Parameter(paramName, paramValue));
+	}
+
     //---------------------------------------------------------------
     void BaseExtraTechnique::addExtraTechniqueChildParameter ( 
         const String& profileName,
@@ -564,6 +586,32 @@ namespace COLLADASW
         childParameters.push_back(Parameter(paramName, paramValue));
     }
 
+	//---------------------------------------------------------------
+	void BaseExtraTechnique::addExtraTechniqueChildParameter(
+		const String& profileName,
+		const String& childName,
+		const String& paramName,
+		const std::vector<float>& floatArray,
+		const String &paramSid,
+		const String& tagName)
+	{
+		// Get the current Profile from the map or create a new one.
+		Profile& profile = getProfile(profileName);
+
+		// Get the current childElement from the map or create a new one.
+		Parameters& childParameters = getChildParameters(profile.mChildElements, childName);
+
+		// Create the value
+		ParamData paramValue;
+		paramValue.sid = paramSid;
+		paramValue.floatArray = floatArray;
+		paramValue.paramType = FLOAT_ARRAY;
+		paramValue.tagName = tagName;
+
+		// Add the given parameter into the parameter list of the child element
+		childParameters.push_back(Parameter(paramName, paramValue));
+	}
+
     //---------------------------------------------------------------
 	void BaseExtraTechnique::addExtraTechniqueElement(const String& profileName, const String& tagName, const String& attributeName, const String& attributeValue)
     {
@@ -797,7 +845,11 @@ namespace COLLADASW
             case ENUM:
                 colladaTechnique.addParameter(paramName, paramData.stringValue, paramData.sid, "enum", paramData.tagName);
                 break;
-            }
+
+			case FLOAT_ARRAY:
+				colladaTechnique.addParameter(paramName, paramData.floatArray, paramData.sid, CSWC::VALUE_TYPE_FLOAT_ARRAY, paramData.tagName);
+				break;
+			}
 
             // Get the next element
             ++paramsIt;

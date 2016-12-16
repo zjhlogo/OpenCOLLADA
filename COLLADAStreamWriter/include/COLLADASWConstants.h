@@ -632,6 +632,7 @@ namespace COLLADASW
 		static const String VALUE_TYPE_FLOAT;
 		static const String VALUE_TYPE_DOUBLE;
 		static const String VALUE_TYPE_STRING;
+		static const String VALUE_TYPE_FLOAT_ARRAY;
     };
 
 }

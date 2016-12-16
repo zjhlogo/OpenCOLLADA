@@ -76,6 +76,15 @@ namespace COLLADAMax
 		visible to reflections and refractions. */
 		static const String SECONDARY_VISIBILITY_PROPERTY;
 
+		// added by zjhlogo
+		static const String DOUBLE_SIDED_PROPERTY;
+		static const String OPACITY_TIMES;
+		static const String OPACITY_VALUES;
+		static const String UV_TIMES;
+		static const String UV_OFFSET_VALUES;
+		static const String UV_ANGLE_VALUES;
+		static const String UV_SCALE_VALUES;
+
     private:
 		COLLADASW::StreamWriter* mSW;
 		AnimationExporter * mAnimationExporter;

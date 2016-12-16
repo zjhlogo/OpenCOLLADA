@@ -69,6 +69,8 @@ namespace COLLADASW
         /** Adds a parameter to the technique */
 		void addParameter(const String &paramName, const bool &value, const String &sid = "", const String &type = "", const String& tagName = "");
 
+		void addParameter(const String &paramName, const std::vector<float>& floatArray, const String &sid = "", const String &type = "", const String& tagName = "");
+
         /** Adds a parameter to the technique */
 		void addMatrixParameter(const String &paramName, const double matrix[][4], const String &sid = "", const String &type = "", const String& tagName = "") const;
 

@@ -135,6 +135,34 @@ namespace COLLADASW
 		mSW->closeElement();
     }
 
+	//---------------------------------------------------------------
+	void Technique::addParameter(const String &paramName, const std::vector<float>& floatArray, const String &sid, const String &type, const String& tagName)
+	{
+		mSW->openElement(tagName == "" ? paramName : tagName);
+		if (!sid.empty())
+			mSW->appendAttribute(CSWC::CSW_ATTRIBUTE_SID, sid);
+		else if (!paramName.empty())
+			mSW->appendAttribute(CSWC::CSW_ATTRIBUTE_SID, paramName);
+		if (!type.empty())
+			mSW->appendAttribute(CSWC::CSW_ATTRIBUTE_TYPE, type);
+
+		std::string spliter = "";
+		std::stringstream ssValue;
+
+		for (const auto& value : floatArray)
+		{
+			ssValue << spliter;
+			ssValue << value;
+
+			spliter = " ";
+		}
+
+		String valueString = ssValue.str();
+		mSW->appendValues(valueString);
+
+		mSW->closeElement();
+	}
+
     //---------------------------------------------------------------
 	void Technique::addParameter(const String &paramName, const int &value, const String &sid, const String &type, const String& tagName)
     {

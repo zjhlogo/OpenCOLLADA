@@ -178,9 +178,6 @@ namespace COLLADASW
         /** The extra tag elements under the effect profile's technique element. */
         BaseExtraTechnique mProfileTechniqueTextureExtra;
 
-		/** Double Side, Added by zjhlogo */
-		bool mDoubleSide;
-
     public:
 
         /** Constructor
@@ -363,10 +360,6 @@ namespace COLLADASW
 
         /** Add the sampler required by @a colorOrTexture to the stream*/
         void addSampler ( const ColorOrTexture &colorOrTexture );
-
-		/* Set double side, Added by zjhlogo */
-		void setDoubleSide(bool doubleSide) { mDoubleSide = doubleSide; };
-		bool getDoubleSide() const { return mDoubleSide; };
 
     private:
 

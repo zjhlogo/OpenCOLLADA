@@ -40,6 +40,7 @@ namespace COLLADASW
         FLOAT3,
         BOOL,
         MATRIX,
+		FLOAT_ARRAY,
         ENUM
     };
 
@@ -59,6 +60,7 @@ namespace COLLADASW
         float floatValue[3];
         bool boolValue;
         double ( *matrix ) [4];
+		std::vector<float> floatArray;
 
         ParamType paramType;
 		String tagName;
@@ -185,6 +187,7 @@ namespace COLLADASW
         void addExtraTechniqueParameter(const String& profileName, const String& paramName, const float &value0, const float &value1, const float &value2, const String &paramSid = "", const String& tagName = "");
 		void addExtraTechniqueParameter(const String& profileName, const String& paramName, const bool &value, const String &paramSid = "", const String& tagName = "");
         void addExtraTechniqueEnumParameter(const String& profileName, const String& paramName, const String &enumStr = "", const String &paramSid = "", const String& tagName = "");
+		void addExtraTechniqueParameter(const String& profileName, const String& paramName, const std::vector<float>& floatArray, const String &paramSid = "", const String& tagName = "");
 
         /** Adds a child element under the given profile. */
 		void addExtraTechniqueChildParameter(const String& profileName, const String& childName, const String& paramName, const String &value = "", const String &paramSid = "", const String& tagName = "");
@@ -193,6 +196,7 @@ namespace COLLADASW
 		void addExtraTechniqueChildParameter(const String& profileName, const String& childName, const String& paramName, const float &value, const String &paramSid = "", const String& tagName = "");
 		void addExtraTechniqueChildParameter(const String& profileName, const String& childName, const String& paramName, const bool &value, const String &paramSid = "", const String& tagName = "");
 		void addExtraTechniqueChildParameter(const String& profileName, const String& childName, const String& paramName, double matrix[][4], const String &paramSid = "", const String& tagName = "");
+		void addExtraTechniqueChildParameter(const String& profileName, const String& childName, const String& paramName, const std::vector<float>& floatArray, const String &paramSid = "", const String& tagName = "");
 
 		void addExtraTechniqueElement(const String& profileName, const String& tagName, const String& attributeName, const String& attributeValue);
 
