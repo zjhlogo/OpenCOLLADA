@@ -548,7 +548,10 @@ namespace COLLADAMax
 			float frameTime = 1.0f / GetFrameRate();
 
 			// add double side
-			addExtraParameter(DOUBLE_SIDED_PROPERTY, (material->GetTwoSided() == TRUE));
+			if (material->GetTwoSided() == TRUE)
+			{
+				addExtraParameter(DOUBLE_SIDED_PROPERTY, true);
+			}
 
 			// add opacity animation
 			Interval materialIv = material->GetTimeRange(TIMERANGE_ALL | TIMERANGE_CHILDANIMS | TIMERANGE_CHILDNODES);
