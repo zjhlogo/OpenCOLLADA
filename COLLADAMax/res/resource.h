@@ -40,6 +40,7 @@
 #define IDC_GEOM_TRIANGLES              1014
 #define IDC_GEOM_TANGENTS               1015
 #define IDC_GEOM_XREFS                  1016
+#define IDC_GEOM_APPLY_UV_TRANSFORM     1017
 #define IDC_ANIM_SAMPLE                 1019
 #define IDC_START_LABEL                 1020
 #define IDC_END_LABEL                   1021
@@ -98,7 +99,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        115
+#define _APS_NEXT_RESOURCE_VALUE        116
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1064
 #define _APS_NEXT_SYMED_VALUE           101

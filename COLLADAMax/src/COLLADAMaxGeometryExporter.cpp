@@ -886,7 +886,7 @@ namespace COLLADAMax
 		bool applyUVTransformation = false;
 		Matrix3 uvTransfomationMatrix;
 
-		if( material )
+		if(mDocumentExporter->getOptions().applyUvTransform() && material )
 		{
 			int numSubTexMaps = material->NumSubTexmaps();
 

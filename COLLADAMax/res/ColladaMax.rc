@@ -53,6 +53,7 @@ BEGIN
     CONTROL         "Export user defined properties",IDC_EXPORT_USER_PROPERTIES,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,30,109,10
     CONTROL         "Export layers as clips",IDC_LAYERS_TO_CLIPS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,86,101,81,10
+    CONTROL         "Apply Uv Transform",IDC_GEOM_APPLY_UV_TRANSFORM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,163,70,86,10
 END
 
 IDD_XREF_REUSE DIALOGEX 0, 0, 485, 84
@@ -278,7 +279,7 @@ BEGIN
             VALUE "CompanyName", "NetAllied Systems GmbH"
             VALUE "FileDescription", "OpenCOLLADA plug-in for 3ds Max"
             VALUE "FileVersion", "1.3.0rc2"
-            VALUE "LegalCopyright", "© 2008-2010 NetAllied Systems GmbH"
+            VALUE "LegalCopyright", "?2008-2010 NetAllied Systems GmbH"
             VALUE "ProductName", "OpenCOLLADA for 3ds Max"
             VALUE "ProductVersion", "1.3.0rc2"
         END

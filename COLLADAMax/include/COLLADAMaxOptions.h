@@ -51,6 +51,7 @@ namespace COLLADAMax
 		static const String OPTION_ANIMATIONEND_NAME;
 		static const String OPTION_COPY_IMAGES_NAME;
 		static const String OPTION_EXPORT_USERDEFINED_PROPERTIES_NAME;
+		static const String OPTION_APPLY_UV_TRANSFORM;
 
 
 	private:
@@ -77,7 +78,7 @@ namespace COLLADAMax
 		String mXRefOutputDir;              //!< The directory where all the xref scenes should be exported to
 
 		bool mExportUserDefinedProperties;	//!< export user defined properties
-
+		bool mApplyUvTransform;
 	
 	public:
         /** Constructor*/
@@ -151,6 +152,8 @@ namespace COLLADAMax
 
 		/** Returns if user defined properties are exported.*/
 		bool getExportUserDefinedProperties() const { return mExportUserDefinedProperties; }
+
+		bool applyUvTransform() const { return mApplyUvTransform; };
 
 		bool ShowDialog();
 

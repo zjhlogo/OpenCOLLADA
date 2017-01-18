@@ -43,7 +43,7 @@ namespace COLLADAMax
 	const String Options::OPTION_ANIMATIONEND_NAME =  "animEnd";
 	const String Options::OPTION_COPY_IMAGES_NAME =  "copyImages";
 	const String Options::OPTION_EXPORT_USERDEFINED_PROPERTIES_NAME =  "exportUserdefinedProperties";
-
+	const String Options::OPTION_APPLY_UV_TRANSFORM = "applyUvTransform";
 
 
 	static void EnableDlgControl(HWND window, int controlId, BOOL enabled)
@@ -97,7 +97,7 @@ namespace COLLADAMax
 		mBakeMatrices(false),
 		mRelativePaths(false),
 		mCopyImages(true),
-		mImageDirectory("images"),
+		mImageDirectory("."),
 		mCheckIfAnimationIsAnimated(false),
 		importUnits(true),
 		importUpAxis(true),
@@ -106,7 +106,8 @@ namespace COLLADAMax
 		mAnimationStart(TIME_INITIAL_POSE),
 		mAnimationEnd(TIME_PosInfinity),
 		mXRefOutputDir("C:\\Temp\\xref\\"),
-		mExportUserDefinedProperties(false)
+		mExportUserDefinedProperties(false),
+		mApplyUvTransform(false)
 	{
 
 		// Load the export options from the configuration file
@@ -171,6 +172,7 @@ namespace COLLADAMax
 			CheckDlgButton(hWnd, IDC_RELATIVE_PATHS, mRelativePaths);
 			CheckDlgButton(hWnd, IDC_COPY_IMAGES, mCopyImages);
 			CheckDlgButton(hWnd, IDC_EXPORT_USER_PROPERTIES, mExportUserDefinedProperties);
+			CheckDlgButton(hWnd, IDC_GEOM_APPLY_UV_TRANSFORM, mApplyUvTransform);
 
 			// Animation checkboxes depend on the enable button.
 			EnableDlgControl(hWnd, IDC_ANIM_SAMPLE, mAnimations);
@@ -257,6 +259,7 @@ namespace COLLADAMax
 			mTangents = IsDlgButtonChecked(hWnd, IDC_GEOM_TANGENTS) == BST_CHECKED;
 			mCopyImages = IsDlgButtonChecked(hWnd, IDC_COPY_IMAGES) == BST_CHECKED;
 			mExportUserDefinedProperties = IsDlgButtonChecked(hWnd, IDC_EXPORT_USER_PROPERTIES) == BST_CHECKED;
+			mApplyUvTransform = IsDlgButtonChecked(hWnd, IDC_GEOM_APPLY_UV_TRANSFORM) == BST_CHECKED;
 
 			spin = GetISpinner(GetDlgItem(hWnd, IDC_ANIM_START_SPIN)); 
 			mAnimationStart = mSampleAnimation ? spin->GetIVal() : sceneStart;
@@ -333,6 +336,7 @@ namespace COLLADAMax
 		writeOption(file, OPTION_ANIMATIONEND_NAME, mAnimationEnd );
 		writeOption(file, OPTION_COPY_IMAGES_NAME, mCopyImages );
 		writeOption(file, OPTION_EXPORT_USERDEFINED_PROPERTIES_NAME, mExportUserDefinedProperties );
+		writeOption(file, OPTION_APPLY_UV_TRANSFORM, mApplyUvTransform);
 
 		fclose(file);
 	}
@@ -392,7 +396,8 @@ namespace COLLADAMax
 						readOption<int>(token, OPTION_ANIMATIONSTART_NAME, value, mAnimationStart) ||
 						readOption<int>(token, OPTION_ANIMATIONEND_NAME, value, mAnimationEnd)||
 						readOption<bool>(token, OPTION_COPY_IMAGES_NAME, value, mCopyImages)||
-						readOption<bool>(token, OPTION_EXPORT_USERDEFINED_PROPERTIES_NAME, value, mExportUserDefinedProperties);
+						readOption<bool>(token, OPTION_EXPORT_USERDEFINED_PROPERTIES_NAME, value, mExportUserDefinedProperties)||
+						readOption<bool>(token, OPTION_APPLY_UV_TRANSFORM, value, mApplyUvTransform);
 
 						{
 							// Handle unknown option here.

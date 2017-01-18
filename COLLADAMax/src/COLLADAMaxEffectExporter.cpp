@@ -488,6 +488,7 @@ namespace COLLADAMax
         Shader* shader = material->GetShader();
 
         TimeValue animationStart = mDocumentExporter->getOptions().getAnimationStart();
+		TimeValue animationEnd = mDocumentExporter->getOptions().getAnimationEnd();
 
         if ( !inited )
         {
@@ -543,7 +544,6 @@ namespace COLLADAMax
 			addParamBlockAnimatedExtraParameters(EXTENDED_SHADER_ELEMENT, EXTENDED_SHADER_PARAMETERS, EXTENDED_SHADER_PARAMETER_COUNT, extendedParameters, effectId);
 
 			// added by zjhlogo
-
 			TimeValue tickPerFrame = GetTicksPerFrame();
 			float frameTime = 1.0f / GetFrameRate();
 
@@ -554,11 +554,10 @@ namespace COLLADAMax
 			}
 
 			// add opacity animation
-			Interval materialIv = material->GetTimeRange(TIMERANGE_ALL | TIMERANGE_CHILDANIMS | TIMERANGE_CHILDNODES);
-			if (!materialIv.Empty() && materialIv.Duration() > 0)
+			if (animationStart < animationEnd)
 			{
-				TimeValue start = materialIv.Start();
-				TimeValue end = materialIv.End();
+				TimeValue start = animationStart;
+				TimeValue end = animationEnd;
 				TimeValue offset = start;
 
 				std::vector<float> timeValues;
@@ -587,11 +586,10 @@ namespace COLLADAMax
 				StdUVGen* uvGen = bitmapTex->GetUVGen();
 				if (!uvGen) continue;
 
-				Interval texMapIv = uvGen->GetTimeRange(TIMERANGE_ALL | TIMERANGE_CHILDANIMS | TIMERANGE_CHILDNODES);
-				if (!texMapIv.Empty() && texMapIv.Duration() > 0)
+				if (animationStart < animationEnd)
 				{
-					TimeValue start = texMapIv.Start();
-					TimeValue end = texMapIv.End();
+					TimeValue start = animationStart;
+					TimeValue end = animationEnd;
 					TimeValue offset = start;
 
 					std::vector<float> timeValues;
