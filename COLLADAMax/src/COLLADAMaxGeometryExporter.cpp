@@ -1089,7 +1089,7 @@ namespace COLLADAMax
 
 			if ( channelIndex <= 0)
 			{
-                if ( channelIndex == 0 )
+                if ( channelIndex == 0 || channelIndex == MAP_ALPHA)
                 {
                     triangles.getInputList().push_back( COLLADASW::Input( COLLADASW::InputSemantic::COLOR, "#" + mId + getTextureSourceIdSuffix( channelIndex ), offset++, channelIndex ) );
                 }
@@ -1132,7 +1132,7 @@ namespace COLLADAMax
 					{
 						int channel = *it;
 
-						if ( channel < 0 )
+						if ( channel < 0 && channel != MAP_ALPHA)
 							continue; // see :TODO: above (MAP_SHADING & MAP_ALPHA)
 
 						if( channel < mesh.getNumMaps() && channel >= -NUM_HIDDENMAPS )
