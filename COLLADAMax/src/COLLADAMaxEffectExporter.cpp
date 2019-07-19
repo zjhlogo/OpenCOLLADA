@@ -121,7 +121,6 @@ namespace COLLADAMax
             , mTextureExporter ( documentExporter )
             , mAnimationExporter( documentExporter->getAnimationExporter() )
             , mImageIdList()
-            , mCopyImageCounter( 0 )
     {}
 
     //---------------------------------------------------------------
@@ -1440,8 +1439,6 @@ namespace COLLADAMax
 		
 		String relativePath = mDocumentExporter->getOptions().getImageDirectory();
 		relativePath.append("/");
-		relativePath.append( COLLADABU::Utils::toString( mCopyImageCounter++ ) );
-		relativePath.append("_");
 		relativePath.append( sourceUri.getPathFile() );
 
 		COLLADASW::URI targetUri ( outputFile, relativePath);
