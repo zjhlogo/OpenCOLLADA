@@ -97,12 +97,14 @@ namespace COLLADASW
     const String CSWC::CSW_ELEMENT_INSTANCE_CAMERA = "instance_camera";
     const String CSWC::CSW_ELEMENT_INSTANCE_CONTROLLER = "instance_controller";
     const String CSWC::CSW_ELEMENT_INSTANCE_EFFECT = "instance_effect";
+	const String CSWC::CSW_ELEMENT_INSTANCE_FORCE_FIELD = "instance_force_field";
 	const String CSWC::CSW_ELEMENT_INSTANCE_GEOMETRY = "instance_geometry";
 	const String CSWC::CSW_ELEMENT_INSTANCE_IMAGE = "instance_image";
     const String CSWC::CSW_ELEMENT_INSTANCE_LIGHT = "instance_light";
     const String CSWC::CSW_ELEMENT_INSTANCE_MATERIAL = "instance_material";
 	const String CSWC::CSW_ELEMENT_INSTANCE_RIGID_BODY = "instance_rigid_body";
     const String CSWC::CSW_ELEMENT_INSTANCE_RIGID_CONSTRAINT = "instance_rigid_constraint";
+	const String CSWC::CSW_ELEMENT_INSTANCE_PHYSICS_MATERIAL = "instance_physics_material";
 	const String CSWC::CSW_ELEMENT_INSTANCE_PHYSICS_MODEL = "instance_physics_model";
     const String CSWC::CSW_ELEMENT_INSTANCE_NODE = "instance_node";
     const String CSWC::CSW_ELEMENT_INSTANCE_VISUAL_SCENE = "instance_visual_scene";
@@ -148,6 +150,10 @@ namespace COLLADASW
 	const String CSWC::CSW_ELEMENT_REST_OFFSET = "rest_offset";
 	const String CSWC::CSW_ELEMENT_SHAPE_FLAGS = "shape_flags";
 	const String CSWC::CSW_ELEMENT_ACTOR_FLAGS = "actor_flags";
+	const String CSWC::CSW_ELEMENT_LOCAL_POSE = "local_pose";
+	const String CSWC::CSW_ELEMENT_LOCAL_POSE_0 = "local_pose0";
+	const String CSWC::CSW_ELEMENT_LOCAL_POSE_1 = "local_pose1";
+	const String CSWC::CSW_ELEMENT_GLOBAL_POSE = "global_pose";
 	const String CSWC::CSW_ELEMENT_DOMINANCE_GROUP = "dominance_group";
 	const String CSWC::CSW_ELEMENT_OWNER_CLIENT = "owner_client";
 	const String CSWC::CSW_ELEMENT_RIGID_BODY_FLAGS = "rigid_body_flags";
@@ -220,6 +226,7 @@ namespace COLLADASW
 	const String CSWC::CSW_ELEMENT_LINEAR_VELOCITY = "linear_velocity";
 	const String CSWC::CSW_ELEMENT_FORCE_LIMIT = "force_limit";
 	const String CSWC::CSW_ELEMENT_DRIVE_FLAGS = "drive_flags";
+	const String CSWC::CSW_ELEMENT_FORCE_TO_SLEEP = "force_to_sleep";
     const String CSWC::CSW_ELEMENT_MINFILTER = "minfilter";
     const String CSWC::CSW_ELEMENT_MIPFILTER = "mipfilter";
     const String CSWC::CSW_ELEMENT_MIP_LEVELS = "mip_levels";
@@ -252,6 +259,7 @@ namespace COLLADASW
     const String CSWC::CSW_ELEMENT_PROFILE_CG = "profile_CG";
     const String CSWC::CSW_ELEMENT_PROFILE_GLES = "profile_GLES";
     const String CSWC::CSW_ELEMENT_PROFILE_GLSL = "profile_GLSL";
+	const String CSWC::CSW_PREFIX_PX = "px";
 	const String CSWC::CSW_ELEMENT_PX_D6JOINT = "px_d6joint";
 	const String CSWC::CSW_ELEMENT_PX_MATERIAL = "px_material";
 	const String CSWC::CSW_ELEMENT_PX_RIGID_BODY = "px_rigid_body";
@@ -261,6 +269,7 @@ namespace COLLADASW
 	const String CSWC::CSW_ELEMENT_QUADRATIC_ATTENUATION = "quadratic_attenuation";
     const String CSWC::CSW_ELEMENT_REFLECTIVE = "reflective";
     const String CSWC::CSW_ELEMENT_REFLECTIVITY = "reflectivity";
+	const String CSWC::CSW_ELEMENT_RENDER = "render";
     const String CSWC::CSW_ELEMENT_REVISION = "revision";
     const String CSWC::CSW_ELEMENT_ROTATE = "rotate";
     const String CSWC::CSW_ELEMENT_SAMPLER = "sampler";
@@ -278,6 +287,7 @@ namespace COLLADASW
     const String CSWC::CSW_ELEMENT_SPECULAR = "specular";
     const String CSWC::CSW_ELEMENT_SOURCE = "source";
     const String CSWC::CSW_ELEMENT_SOURCE_DATA = "source_data";
+	const String CSWC::CSW_ELEMENT_SOURCE_DATA_BASE_URI = "source_data_base_uri";
 	const String CSWC::CSW_ELEMENT_SPLINE = "spline";
 	const String CSWC::CSW_ELEMENT_SPOT = "spot";
     const String CSWC::CSW_ELEMENT_STENCIL_CLEAR = "stencil_clear";
@@ -335,6 +345,7 @@ namespace COLLADASW
     const String CSWC::CSW_ATTRIBUTE_NAME = "name";
     const String CSWC::CSW_ATTRIBUTE_OFFSET = "offset";
     const String CSWC::CSW_ATTRIBUTE_OPAQUE = "opaque";
+	const String CSWC::CSW_ATTRIBUTE_PARENT = "parent";
     const String CSWC::CSW_ATTRIBUTE_PLATFORM = "platform";
     const String CSWC::CSW_ATTRIBUTE_PROFILE = "profile";
     const String CSWC::CSW_ATTRIBUTE_PROGRAM = "program";

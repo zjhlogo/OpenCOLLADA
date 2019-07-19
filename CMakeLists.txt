@@ -271,9 +271,10 @@ endif ()
 
 # building required libs
 add_subdirectory(common/libftoa)
-add_subdirectory(common/libBuffer)
 add_subdirectory(${EXTERNAL_LIBRARIES}/UTF)
+add_subdirectory(common/libBuffer)
 add_subdirectory(${EXTERNAL_LIBRARIES}/MathMLSolver)
+add_subdirectory(${EXTERNAL_LIBRARIES}/zlib)
 
 # building OpenCOLLADA libs
 add_subdirectory(COLLADABaseUtils)
@@ -285,6 +286,8 @@ add_subdirectory(COLLADAStreamWriter)
 # building COLLADAValidator app
 add_subdirectory(COLLADAValidator)
 
+# DAE validator app
+add_subdirectory(DAEValidator)
 
 # Library export
 install(EXPORT LibraryExport DESTINATION ${OPENCOLLADA_INST_CMAKECONFIG} FILE OpenCOLLADATargets.cmake)

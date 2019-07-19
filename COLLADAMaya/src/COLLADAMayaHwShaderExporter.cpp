@@ -27,6 +27,8 @@
 #include "COLLADASWOpenGLConstants.h"
 #include "COLLADASWConstants.h"
 
+#include <maya/MFileIO.h>
+
 #if defined(WIN64) && MAYA_API_VERSION >= 201600 && !defined(WIN32)
 /* define WIN32 to work around CFGX WIN64 compilation */
 #define WIN32
@@ -43,7 +45,7 @@ namespace COLLADAMaya
 {
 
     // ---------------------------------
-    void HwShaderExporter::exportPluginHwShaderNode (
+    bool HwShaderExporter::exportPluginHwShaderNode (
         const String &effectId,
         COLLADASW::EffectProfile *effectProfile,
         MObject shaderNode )
@@ -67,7 +69,7 @@ namespace COLLADAMaya
             cgfxShaderNode* shaderNodeCgfx = ( cgfxShaderNode* ) fnNode.userNode();
 
             // Exports the effect data of a cgfxShader node.
-            exportCgfxShader( shaderNodeCgfx );
+            return exportCgfxShader( shaderNodeCgfx );
         }
         else
         {
@@ -75,11 +77,13 @@ namespace COLLADAMaya
             mEffectProfile->openProfile ();
             mEffectProfile->addProfileElements ();
             mEffectProfile->closeProfile ();
+
+			return true;
         }
     }
 
     // ---------------------------------
-    void HwShaderExporter::exportCgfxShader ( cgfxShaderNode* shaderNodeCgfx )
+    bool HwShaderExporter::exportCgfxShader ( cgfxShaderNode* shaderNodeCgfx )
     {
 		// Disabled for Maya2012, the raw CGeffect is no-longer directly accessible from the cgfxShaderNode class.
 #if MAYA_API_VERSION < 201200
@@ -167,6 +171,14 @@ namespace COLLADAMaya
         // Set the current shader scope to CG
         setShaderScope ( COLLADASW::Shader::SCOPE_CG );
 
+		// Get the current CGeffect
+		const cgfxRCPtr<const cgfxEffect>& cgEffect = shaderNodeCgfx->effect();
+		if (cgEffect.isNull())
+		{
+			MGlobal::displayError("cgEffect is null.");
+			return false;
+		}
+
         // Writes the current effect profile into the collada document
         mEffectProfile->setProfileType ( COLLADASW::EffectProfile::CG );
         mEffectProfile->openProfile ();
@@ -177,20 +189,32 @@ namespace COLLADAMaya
         // Get the filename of the current cgfx file
         MString shaderFxFile = cgfxFindFile(shaderNodeCgfx->shaderFxFile());
         String shaderFxFileName = shaderFxFile.asChar (); // check3d.cgfx
-        COLLADASW::URI  shaderFxFileUri ( COLLADASW::URI::nativePathToUri ( shaderFxFileName ) );
-        setShaderFxFileUri ( shaderFxFileUri );
+		COLLADASW::URI shaderFxFileUri(COLLADASW::URI::nativePathToUri(shaderFxFileName));
+		
+		if (ExportOptions::relativePaths())
+		{
+			MString mayaSourceFile = MFileIO::currentFile();
+			COLLADASW::URI mayaSourceFileUri(COLLADASW::URI::nativePathToUri(mayaSourceFile.asChar()));
+			shaderFxFileUri.makeRelativeTo(mayaSourceFileUri);
+		}
+        
+		setShaderFxFileUri ( shaderFxFileUri );
 
-        // Get the current CGeffect
-        const cgfxRCPtr<const cgfxEffect>& cgEffect = shaderNodeCgfx->effect();
-        if( cgEffect.isNull() )
-        {
-            MGlobal::displayError ("cgEffect is null.");
-            return;
-        }
+        // Set the current include file
+		if (ExportOptions::exportCgfxFileReferences())
+		{
+			mEffectProfile->setInclude(shaderFxFileUri, shaderFxFileUri.getPathFileBase());
 
-		// Set the current include file
-        if ( ExportOptions::exportCgfxFileReferences () )
-            mEffectProfile->setInclude ( shaderFxFileUri, shaderFxFileUri.getPathFileBase() );
+			// Check, if we should copy the cgfx file to the destination folder.
+			// TODO: ExportOptions::copyTextures() should be renamed to something like ExportOptions::copyDependencies()
+			if (ExportOptions::copyTextures())
+			{
+				COLLADABU::URI src = COLLADASW::URI::nativePathToUri(shaderFxFileName);
+				src.setScheme(String("file"));
+				COLLADASW::URI dst = mDocumentExporter->createTargetURI(src);
+				mDocumentExporter->copyFile(src, dst);
+			}
+		}
         else
         {
 #if 1
@@ -217,7 +241,9 @@ namespace COLLADAMaya
 
         // Export the effects parameter
         MObject shaderNode = shaderNodeCgfx->thisMObject();
-        exportEffectParameters ( shaderNode, cgEffect );
+
+		MaterialExporter::mSurfaceSidList.clear();
+		exportEffectParameters ( shaderNode, cgEffect );
 
         // Find if effect parameter is used by any program of the selected technique
         const cgfxTechnique* technique = cgEffect->getFirstTechnique();
@@ -227,6 +253,8 @@ namespace COLLADAMaya
             technique = technique->getNext();
         }
 #endif // MAYA_API_VERSION < 201200
+
+		return true;
     }
 
 #if MAYA_API_VERSION >= 201200
@@ -743,15 +771,18 @@ namespace COLLADAMaya
             }
             case CG_STRING:
                 {
+
+					
                     // Create the parameter
                     COLLADASW::NewParam<> newParam ( streamWriter );
 
                     // Get the value
                     const char* paramValue = cgGetStringParameterValue ( cgParameter ); 
                     String paramString = (String) paramValue;
+					MGlobal::displayWarning(("CG String Parameter type: ") + MString(paramString.c_str()) + MString(" not supported!"));
 
                     // Export the parameter data.
-                    exportParam ( cgParameter, &newParam, paramString );
+                   // exportParam ( cgParameter, &newParam, paramString );
 
                     break;
                 }
@@ -817,6 +848,49 @@ namespace COLLADAMaya
     }
 
     // --------------------------------------
+	COLLADASW::ValueType::ColladaType CGtypeToColladaType(CGtype type)
+	{
+		switch (type)
+		{
+		case CG_BOOL:
+		case CG_BOOL1:				return COLLADASW::ValueType::BOOL;
+		case CG_BOOL2:				return COLLADASW::ValueType::BOOL2;
+		case CG_BOOL3:				return COLLADASW::ValueType::BOOL3;
+		case CG_BOOL4:				return COLLADASW::ValueType::BOOL4;
+		case CG_INT:
+		case CG_INT1:				return COLLADASW::ValueType::INT;
+		case CG_INT2:				return COLLADASW::ValueType::INT2;
+		case CG_INT3:				return COLLADASW::ValueType::INT3;
+		case CG_INT4:				return COLLADASW::ValueType::INT4;
+		case CG_HALF:
+		case CG_HALF1:
+		case CG_FLOAT:
+		case CG_FLOAT1:				return COLLADASW::ValueType::FLOAT;
+		case CG_HALF2:
+		case CG_FLOAT2:				return COLLADASW::ValueType::FLOAT2;
+		case CG_HALF3:
+		case CG_FLOAT3:				return COLLADASW::ValueType::FLOAT3;
+		case CG_HALF4:
+		case CG_FLOAT4:				return COLLADASW::ValueType::FLOAT4;
+		case CG_DOUBLE:
+		case CG_DOUBLE1:			return COLLADASW::ValueType::DOUBLE;
+		case CG_DOUBLE2:			return COLLADASW::ValueType::DOUBLE2;
+		case CG_DOUBLE3:			return COLLADASW::ValueType::DOUBLE3;
+		case CG_DOUBLE4:			return COLLADASW::ValueType::DOUBLE4;
+		case CG_FLOAT2x2:			return COLLADASW::ValueType::FLOAT2x2;
+		case CG_FLOAT3x3:			return COLLADASW::ValueType::FLOAT3x3;
+		case CG_FLOAT4x4:			return COLLADASW::ValueType::FLOAT4x4;
+		case CG_STRING:				return COLLADASW::ValueType::STRING;
+		case CG_SAMPLER1D:			return COLLADASW::ValueType::SAMPLER_1D;
+		case CG_SAMPLER2D:			return COLLADASW::ValueType::SAMPLER_2D;
+		case CG_SAMPLER3D:			return COLLADASW::ValueType::SAMPLER_3D;
+		case CG_SAMPLERCUBE:		return COLLADASW::ValueType::SAMPLER_CUBE;
+		case CG_SAMPLERRECT:		return COLLADASW::ValueType::SAMPLER_RECT;
+		case CG_SAMPLER2DSHADOW:	return COLLADASW::ValueType::SAMPLER_DEPTH;
+		}
+		return COLLADASW::ValueType::VALUE_TYPE_UNSPECIFIED;
+	}
+
     void HwShaderExporter::exportAnnotations (
         const CGparameter& cgParameter, 
         COLLADASW::ParamBase* param )
@@ -824,63 +898,54 @@ namespace COLLADAMaya
         CGannotation cgAnno = cgGetFirstParameterAnnotation ( cgParameter );
         while ( cgAnno )
         {
-            CGtype cgAnnoType = cgGetAnnotationType( cgAnno );
-            const char* cgAnnoName = cgGetAnnotationName( cgAnno );
-            String annotationName ( cgAnnoName );
-            switch ( cgAnnoType )
+            CGtype cgType = cgGetAnnotationType(cgAnno);
+			String annotationName = cgGetAnnotationName(cgAnno);
+			COLLADASW::ValueType::ColladaType colladaType = CGtypeToColladaType(cgType);
+			int nvalues = 0;
+            switch (cgType)
             {
             case CG_BOOL:
             case CG_BOOL1:
-            case CG_BOOL2:
-            case CG_BOOL3:
-            case CG_BOOL4:
-                {
-                    int nvalues = 0;
-                    const CGbool* values = cgGetBoolAnnotationValues( cgAnno, &nvalues );
-                    param->addAnnotation ( annotationName, COLLADASW::ValueType::BOOL, values, nvalues );
-                    break;
-                }
+			case CG_BOOL2:
+			case CG_BOOL3:
+			case CG_BOOL4:
+			{
+				const CGbool* values = cgGetBoolAnnotationValues(cgAnno, &nvalues);
+				param->addAnnotation(annotationName, colladaType, values, nvalues);
+				break;
+			}
             case CG_INT:
             case CG_INT1:
-            case CG_INT2:
-            case CG_INT3:
-            case CG_INT4:
-                {
-                    int nvalues = 0;
-                    const int* values = cgGetIntAnnotationValues( cgAnno, &nvalues );
-                    param->addAnnotation ( annotationName, COLLADASW::ValueType::BOOL, values, nvalues );
-                    break;
-                }
+			case CG_INT2:
+			case CG_INT3:
+			case CG_INT4:
+			{
+				const int* values = cgGetIntAnnotationValues(cgAnno, &nvalues);
+				param->addAnnotation(annotationName, colladaType, values, nvalues);
+				break;
+			}
             case CG_HALF:
-            case CG_HALF2:
-            case CG_HALF3:
-            case CG_HALF4:
-            case CG_FLOAT:
-            case CG_FLOAT1:
-            case CG_FLOAT2:
-            case CG_FLOAT3:
-            case CG_FLOAT4:
-                {
-                    int nvalues = 0;
-                    const float* values = cgGetFloatAnnotationValues ( cgAnno, &nvalues );
-                    param->addAnnotation ( annotationName, COLLADASW::ValueType::FLOAT, values, nvalues );
-                    break;
-                }
-            case CG_HALF4x4:
-            case CG_FLOAT4x4:
-                {
-                    // TODO
-//                    assert ( "Annotation type not supported! " + cgAnnoType );
-                    break;
-                }
+			case CG_HALF1:
+			case CG_FLOAT:
+			case CG_FLOAT1:
+			case CG_HALF2:
+			case CG_FLOAT2:
+			case CG_HALF3:
+			case CG_FLOAT3:
+			case CG_HALF4:
+			case CG_FLOAT4:
+			{
+				const float* values = cgGetFloatAnnotationValues(cgAnno, &nvalues);
+				param->addAnnotation(annotationName, colladaType, values, nvalues);
+				break;
+			}
             case CG_STRING:
-                {
-                    const char* val = cgGetStringAnnotationValue ( cgAnno );
-                    param->addAnnotation ( annotationName, COLLADASW::ValueType::STRING, String ( val ) );
-                    break;
-                }
+            {
+				String value = cgGetStringAnnotationValue(cgAnno);
+				param->addAnnotation(annotationName, colladaType, value);
+                break;
+            }
             default:
- //               assert ( "Annotation type not supported! " + cgAnnoType );
                 break;
             }
 
@@ -930,10 +995,10 @@ namespace COLLADAMaya
 
         // Get the name of the current parameter
         const char* samplerSid = cgGetParameterName ( cgParameter );
-
+		
         // Name of the current texture
         const char* surfaceSid = cgGetParameterName( cgTextureParam );
-
+		
         // Create the collada sampler object
         COLLADASW::Sampler sampler ( COLLADASW::Sampler::SAMPLER_TYPE_UNSPECIFIED, samplerSid, surfaceSid );
 
@@ -1025,8 +1090,8 @@ namespace COLLADAMaya
         COLLADASW::Sampler::SamplerType samplerType = COLLADASW::Sampler::SAMPLER_TYPE_UNSPECIFIED;
         COLLADASW::ValueType::ColladaType samplerValueType = COLLADASW::ValueType::VALUE_TYPE_UNSPECIFIED;
 
-        // Get the type of the resource, if is set.
-        getResourceType ( cgTextureParam, samplerType, samplerValueType );
+        // Get the type of the resource.
+		getResourceTypeFromCGParameter(cgParameter, samplerType);
 
         // Set the sampler type
         sampler.setSamplerType ( samplerType );
@@ -1045,13 +1110,20 @@ namespace COLLADAMaya
             getAnnotations( samplerAnnotations, cgParameter );
 
             // Add the parameter.
-            sampler.addInNewParam ( streamWriter, &surfaceAnnotations, &samplerAnnotations );
+			sampler.addInNewParam(streamWriter, &surfaceAnnotations, &samplerAnnotations, (MaterialExporter::mSurfaceSidList.find(surfaceSid) == MaterialExporter::mSurfaceSidList.end()));
         }
         else
         {
             // Add the parameter.
-            sampler.addInSetParam ( streamWriter );
+			sampler.addInSetParam(streamWriter, 0, 0, (MaterialExporter::mSurfaceSidList.find(surfaceSid) == MaterialExporter::mSurfaceSidList.end()));
         }
+
+		MaterialExporter::SidSet::iterator it = MaterialExporter::mSurfaceSidList.find(surfaceSid);
+		if (it == MaterialExporter::mSurfaceSidList.end())
+		{
+			MaterialExporter::mSurfaceSidList.insert(surfaceSid);
+		}
+
     }
 
     // --------------------------------------
@@ -1264,7 +1336,11 @@ namespace COLLADAMaya
         {
             // Get the image path
             // Take the filename for the unique image name
-            COLLADASW::URI sourceFileUri(COLLADASW::URI::nativePathToUri(fileName));
+			MString workspace;
+			MStatus status = MGlobal::executeCommand(MString("workspace -q -rd;"), workspace);
+			if (!status) workspace.clear();
+			COLLADABU::URI workspaceURI(COLLADABU::URI::nativePathToUri(workspace.asChar()));
+			COLLADABU::URI sourceFileUri(workspaceURI, COLLADABU::URI::nativePathToUri(fileName));
             if ( sourceFileUri.getScheme ().empty () )
                 sourceFileUri.setScheme ( COLLADASW::URI::SCHEME_FILE );
             String mayaImageId = DocumentExporter::mayaNameToColladaName ( sourceFileUri.getPathFileBase().c_str () );
@@ -1352,7 +1428,40 @@ namespace COLLADAMaya
                 samplerValueType = COLLADASW::ValueType::SAMPLER_RECT;
             }
         }
-    }
+	}
+
+
+
+	void HwShaderExporter::getResourceTypeFromCGParameter(
+		const CGparameter& cgParameter,
+		COLLADASW::Sampler::SamplerType &samplerType)
+	{
+
+		CGtype paramType = cgGetParameterType(cgParameter);
+
+		switch (paramType)
+		{
+			case (CG_SAMPLER1D) :
+				samplerType = COLLADASW::Sampler::SAMPLER_TYPE_1D;
+				break;
+			case (CG_SAMPLER2D) :
+				samplerType = COLLADASW::Sampler::SAMPLER_TYPE_2D;
+				break;
+			case (CG_SAMPLER3D) :
+				samplerType = COLLADASW::Sampler::SAMPLER_TYPE_3D;
+				break;
+			case (CG_SAMPLERCUBE) :
+				samplerType = COLLADASW::Sampler::SAMPLER_TYPE_CUBE;
+				break;
+			case (CG_SAMPLERRECT) :
+				samplerType = COLLADASW::Sampler::SAMPLER_TYPE_RECT;
+				break;
+			default:
+				samplerType = COLLADASW::Sampler::SAMPLER_TYPE_UNSPECIFIED;
+				break;
+		}
+	}
+
 
     // --------------------------------------
     String HwShaderExporter::getProgramSourceString ( const char* programSourceCG )

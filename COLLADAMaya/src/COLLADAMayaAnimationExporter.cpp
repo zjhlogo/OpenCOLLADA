@@ -2582,13 +2582,13 @@ namespace COLLADAMaya
         // In COLLADA, the <input> semantics IN_TANGENT and OUT_TANGENT 
         // for Bezier curves are used to store the control points.
         // 
-        // In COLLADA, a geometry vector for Bézier segment[i] is defined by:
-        // • P0 is POSITION[i]
-        // • C0 is OUT_TANGENT[i]
-        // • C1 is IN_TANGENT[i+1]
-        // • P1 is POSITION[i+1]
+        // In COLLADA, a geometry vector for Bezier segment[i] is defined by:
+        // - P0 is POSITION[i]
+        // - C0 is OUT_TANGENT[i]
+        // - C1 is IN_TANGENT[i+1]
+        // - P1 is POSITION[i+1]
         // 
-        // A cubic Bézier spline equation is given by:
+        // A cubic Bezier spline equation is given by:
         // B(s) = P0*(1-s)^3 + 3*C0*s*(1-s)^2 + 3*C1*s^2*(1-s) + P1*s^3
         // 
         // Now the way to the magic factor 3:
@@ -2641,7 +2641,11 @@ namespace COLLADAMaya
         // --------------------------------
         // In-tangent
 
+#if MAYA_API_VERSION >= 20180000
+		double slopeX, slopeY;
+#else
         float slopeX, slopeY;
+#endif
         animCurveFn.getTangent ( keyPosition, slopeX, slopeY, true /*keyPosition>0*/ );
 
         if ( !isWeightedCurve )
@@ -2659,12 +2663,12 @@ namespace COLLADAMaya
             slopeX /= 3.0f;
             slopeY /= 3.0f; 
         }
-        bkey->inTangent = TangentPoint ( bkey->input - slopeX, bkey->output - slopeY );
+        bkey->inTangent = TangentPoint ( (float)(bkey->input - slopeX), (float)(bkey->output - slopeY) );
 
         // --------------------------------
         // Out-tangent
 
-        animCurveFn.getTangent ( keyPosition, slopeX, slopeY, false /*keyPosition>=keyCount-1*/ );
+		animCurveFn.getTangent(keyPosition, slopeX, slopeY, false /*keyPosition>=keyCount-1*/);
 
         if ( !isWeightedCurve )
         {
@@ -2682,7 +2686,7 @@ namespace COLLADAMaya
             slopeY /= 3.0f;
         }
 
-        bkey->outTangent = TangentPoint ( bkey->input + slopeX, bkey->output + slopeY );
+        bkey->outTangent = TangentPoint ( (float)(bkey->input + slopeX), (float)(bkey->output + slopeY) );
     }
 
     // ------------------------------------------------------------

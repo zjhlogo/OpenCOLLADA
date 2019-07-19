@@ -48,6 +48,10 @@
 #	pragma message ("Compiling for Max2016")
 #elif defined MAX_2017
 #	pragma message ("Compiling for Max2017")
+#elif defined MAX_2018
+#	pragma message ("Compiling for Max2018")
+#elif defined MAX_2019
+#	pragma message ("Compiling for Max2019")
 #else
 #	error( "Unsupported Max version" )
 #endif

@@ -88,8 +88,9 @@ namespace COLLADASaxFWL
 			CONTROLLER_FLAG            = 1<<13,
 			FORMULA_FLAG               = 1<<14,
 			KINEMATICS_FLAG            = 1<<15,
+			ANIMATION_CLIP_FLAG        = 1<<16,
 
-			ALL_OBJECTS_MASK           = (1<<16) - 1,
+			ALL_OBJECTS_MASK           = (1<<17) - 1,
 		};
 
 	public:
@@ -378,6 +379,11 @@ namespace COLLADASaxFWL
         @return The elements COLLADAFW::UniqueId */
         COLLADAFW::UniqueId getUniqueId(COLLADAFW::ClassId classId);
         
+		/** Returns the map of COLLADAFW::URIs to COLLADAFW::UniqueIds. This can be used, for example,
+		to figure out the original ID or target attribute of an input element from the relevant UniqueId.
+		@preturn The URIUniqueIdMap for this loader. */
+		const URIUniqueIdMap& getUniqueIdMap(void) const;
+
 	private:
 		friend class IFilePartLoader;
 		friend class FileLoader;

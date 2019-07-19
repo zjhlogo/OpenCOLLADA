@@ -29,10 +29,10 @@ namespace COLLADASaxFWL
      * includes vertex and primitive information.
      * Vertex information is the set of attributes associated with a point on 
      * the surface of the mesh. Each vertex includes data for attributes such as:
-     * � Vertex position
-     * � Vertex color
-     * � Vertex normal
-     * � Vertex texture coordinate
+     * - Vertex position
+     * - Vertex color
+     * - Vertex normal
+     * - Vertex texture coordinate
      * The mesh also includes a description of how the vertices are organized to 
      * form the geometric shape of the mesh. The mesh vertices are collated into 
      * geometric primitives such as polygons, triangles, or lines.
@@ -363,13 +363,13 @@ namespace COLLADASaxFWL
 
 
 		/** Sets the offsets for the different semantics (positions normals etc)*/
-		void initializeOffsets();
-        void initializeTexCoordsOffset ();
-        void initializeColorsOffset ();
+        bool initializeOffsets();
+        bool initializeTexCoordsOffset ();
+        bool initializeColorsOffset ();
         void initializeNormalsOffset ();
         void initializeTangentsOffset ();
         void initializeBinormalsOffset ();
-        void initializePositionsOffset ();
+        bool initializePositionsOffset ();
 
 		/** Writes all the indices in data into the indices array of the current mesh primitive.*/
 		bool writePrimitiveIndices ( const unsigned long long* data, size_t length );

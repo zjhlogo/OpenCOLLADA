@@ -60,7 +60,7 @@ namespace COLLADAMaya
         virtual ~HwShaderExporter () {}
 
         /** Export a hardware shader node. */
-        void exportPluginHwShaderNode (
+        bool exportPluginHwShaderNode (
             const String &effectId,
             COLLADASW::EffectProfile *effectProfile,
             MObject shadingNetwork );
@@ -84,7 +84,7 @@ namespace COLLADAMaya
         const COLLADASW::URI& getShaderFxFileUri () const;
 
         /** Exports the effect data of a cgfxShader node. */
-        void exportCgfxShader ( cgfxShaderNode* shaderNodeCgfx );
+        bool exportCgfxShader ( cgfxShaderNode* shaderNodeCgfx );
 
         /** Export the effects parameter. */
         void exportEffectParameters ( 
@@ -112,6 +112,10 @@ namespace COLLADAMaya
             const CGparameter& cgTextureParam,
             COLLADASW::Sampler::SamplerType &samplerType,
             COLLADASW::ValueType::ColladaType &samplerValueType );
+
+		void getResourceTypeFromCGParameter(
+			const CGparameter& cgParameter,
+			COLLADASW::Sampler::SamplerType &samplerType);
 
         /** Exports the given parameter with all his annotations, the semantic and the given values. */
         template<class Type>

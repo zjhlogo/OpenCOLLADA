@@ -385,16 +385,20 @@ namespace COLLADASW
 	void Sampler::addInParam ( 
         StreamWriter* sw, 
         std::vector<COLLADASW::Annotation>* surfaceAnnotations /*= 0*/, 
-        std::vector<COLLADASW::Annotation>* samplerAnnotations /*= 0*/ ) const
+        std::vector<COLLADASW::Annotation>* samplerAnnotations /*= 0*/,
+		bool AddSurfaceParam) const
 	{
 		if ( sw->getCOLLADAVersion() == StreamWriter::COLLADA_1_4_1 )
 		{
-			// Add the surface <newparam>
-			ParamSurfaceType paramSurface ( sw );
-			paramSurface.openParam ( mSurfaceSid );
-            if ( surfaceAnnotations ) paramSurface.addAnnotations ( *surfaceAnnotations );
-			addSurface ( sw );
-			paramSurface.closeParam ();
+			if (AddSurfaceParam)
+			{
+				// Add the surface <newparam>
+				ParamSurfaceType paramSurface(sw);
+				paramSurface.openParam(mSurfaceSid);
+				if (surfaceAnnotations) paramSurface.addAnnotations(*surfaceAnnotations);
+				addSurface(sw);
+				paramSurface.closeParam();
+			}
 
 			// Add the sampler <newparam>
 			ParamSamplerType paramSampler ( sw );
@@ -419,18 +423,20 @@ namespace COLLADASW
 	void Sampler::addInSetParam( 
         StreamWriter* sw, 
         std::vector<COLLADASW::Annotation>* surfaceAnnotations /*= 0*/, 
-        std::vector<COLLADASW::Annotation>* samplerAnnotations /*= 0*/ ) const
+        std::vector<COLLADASW::Annotation>* samplerAnnotations /*= 0*/,
+		bool AddSurfaceParam) const
 	{
-		addInParam<SetParamSurface, SetParamSampler>( sw, surfaceAnnotations, samplerAnnotations );
+		addInParam<SetParamSurface, SetParamSampler>(sw, surfaceAnnotations, samplerAnnotations, AddSurfaceParam);
 	}
 
 	// ----------------------------------------
 	void Sampler::addInNewParam( 
         StreamWriter* sw, 
         std::vector<COLLADASW::Annotation>* surfaceAnnotations /*= 0*/, 
-        std::vector<COLLADASW::Annotation>* samplerAnnotations /*= 0*/ ) const
+        std::vector<COLLADASW::Annotation>* samplerAnnotations /*= 0*/,
+		bool AddSurfaceParam) const
 	{
-		addInParam<NewParamSurface, NewParamSampler>( sw, surfaceAnnotations, samplerAnnotations );
+		addInParam<NewParamSurface, NewParamSampler>(sw, surfaceAnnotations, samplerAnnotations, AddSurfaceParam);
 	}
 
 	// ----------------------------------------
@@ -439,12 +445,14 @@ namespace COLLADASW
 		sw->openElement ( CSWC::CSW_ELEMENT_SURFACE );
 		sw->appendAttribute( CSWC::CSW_ATTRIBUTE_TYPE, getSurfaceTypeString ( mSamplerType ) );
 
-		sw->openElement( CSWC::CSW_ELEMENT_INIT_FROM );
 
-		if ( !mImageId.empty() )
-			sw->appendValues( mImageId );
-
-		sw->closeElement(); //CSW_ELEMENT_INIT_FROM
+		if (!mImageId.empty())
+		{
+			sw->openElement(CSWC::CSW_ELEMENT_INIT_FROM);
+			sw->appendValues(mImageId);
+			sw->closeElement(); //CSW_ELEMENT_INIT_FROM
+		}
+		
 
 		addExtraTechniques ( sw );
 
